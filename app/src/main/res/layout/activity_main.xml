@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        <fragment
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/frag_map"
+                android:name="com.google.android.gms.maps.SupportMapFragment"
+                tools:layout_editor_absoluteY="0dp"
+                tools:layout_editor_absoluteX="43dp"
+        />
+
+        <Button
+                android:text="Buscar"
+                android:layout_width="218dp"
+                android:layout_height="54dp"
+                android:id="@+id/mapfrag_btn_search"
+                android:layout_gravity="center_horizontal"
+                app:layout_constraintTop_toTopOf="@+id/frag_map"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginStart="8dp"
+                app:layout_constraintEnd_toEndOf="@+id/frag_map"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintHorizontal_bias="0.497"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/frag_map"
+                app:layout_constraintVertical_bias="0.881"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+
+            android:padding="10dp"
+            android:id="@+id/frag_bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="500dp"
+            android:background="#D73F51B5"
+            app:behavior_hideable="true"
+            app:behavior_peekHeight="50dp"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <TextView
+                android:text="15 cidades mais próximas"
+                android:textColor="#FFFFFFFF"
+                android:layout_gravity="center_horizontal"
+                android:textSize="20sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <ListView
+                android:background="#FFFFFFFF"
+                android:layout_marginTop="42dp"
+                android:id="@+id/bottom_sheet_lv_cities"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+    </com.google.android.material.bottomnavigation.BottomNavigationView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="35dp">
+
+    <TextView
+            android:textSize="12sp"
+            android:id="@+id/mapfrag_list_item"
+            android:layout_gravity="center_horizontal"
+            android:text="Nome da Cidade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+    />
+
+</LinearLayout>
