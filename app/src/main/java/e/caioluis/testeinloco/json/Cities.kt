@@ -8,13 +8,12 @@ data class City(
 
     val id : Int,
     val weather : ArrayList<Weather>,
-    val temperature : Temperature,
+    val main : Temperature,
     val name : String
 )
 
 data class Weather(
 
-    val main: String,
     val description: String
 )
 

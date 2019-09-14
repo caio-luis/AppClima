@@ -18,9 +18,9 @@
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyCeq_fEINWOCDJO-7g-BudD7tY3kHBa-bM"/>
 
-        <activity android:name=".ui.InformationActivity"/>
+        <activity android:name=".ui.act02.CityInfoActivity"/>
 
-        <activity android:name=".ui.MainActivity">
+        <activity android:name=".ui.act01.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

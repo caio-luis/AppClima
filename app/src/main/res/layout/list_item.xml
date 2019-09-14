@@ -4,10 +4,10 @@
         android:padding="10dp"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="35dp">
+        android:layout_height="40dp">
 
     <TextView
-            android:textSize="12sp"
+            android:textSize="15sp"
             android:id="@+id/mapfrag_list_item"
             android:layout_gravity="center_horizontal"
             android:text="Nome da Cidade"
