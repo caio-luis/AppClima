@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "316772631935",
+    "firebase_url": "https://teste-in-loco.firebaseio.com",
+    "project_id": "teste-in-loco",
+    "storage_bucket": "teste-in-loco.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316772631935:android:cb76e7c714f421c05c064a",
+        "android_client_info": {
+          "package_name": "e.caioluis.testeinloco"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316772631935-jq42qb0fcklujtagro2qdk8c56stdah9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQbWRJm8gq4ANiqiM8NyLlkQpML4Vatfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316772631935-jq42qb0fcklujtagro2qdk8c56stdah9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
