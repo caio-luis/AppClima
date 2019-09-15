@@ -13,9 +13,10 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import e.caioluis.testeinloco.Constants
+import e.caioluis.testeinloco.R
 import e.caioluis.testeinloco.json.Cities
 import e.caioluis.testeinloco.json.City
-import e.caioluis.testeinloco.web.Constants
 import e.caioluis.testeinloco.web.WebAPI
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -51,17 +52,11 @@ class MainActivityPresenter(
 
         val permission = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
 
-        ActivityCompat.requestPermissions(context as Activity, permission, 0)
-
-        /*ActivityCompat.OnRequestPermissionsResultCallback { requestCode, permissions, grantResults ->
-
-            when (grantResults.isNotEmpty()) {
-                grantResults[0] == PackageManager.PERMISSION_GRANTED
-                -> mView.initActions()
-                grantResults[0] == PackageManager.PERMISSION_DENIED ->
-                    mView.showToastMessage("É necessaria a permissão de GPS")
-            }
-        }*/
+        ActivityCompat.requestPermissions(
+            context as Activity,
+            permission,
+            0
+        )
     }
 
     override fun setMapMarker(markerLatLgn: LatLng, googleMap: GoogleMap) {
@@ -74,12 +69,16 @@ class MainActivityPresenter(
 
     override fun startApiRequest() {
 
+        mView.showProgressBar(true)
+
         val webAPI = retrofitClient()
 
         webAPI.syncCallNearbyCitiesByLatLong(markerLatLng.latitude, markerLatLng.longitude)
             .enqueue(object : Callback<Cities> {
 
                 override fun onFailure(call: Call<Cities>, t: Throwable) {
+
+                    mView.showProgressBar(false)
 
                     mView.showToastMessage(t.message.toString())
                 }
@@ -89,10 +88,15 @@ class MainActivityPresenter(
                     val cities = response.body()
 
                     if (cities == null) {
-                        mView.showToastMessage("Não há cidades próximas ao ponto selecionado!")
+
+                        mView.showToastMessage(context.getString(R.string.error_message_no_nearby_cities))
+
+                        mView.showProgressBar(false)
+
                         return
                     }
 
+                    mView.showProgressBar(false)
                     mView.showList(cities.list)
                 }
             })

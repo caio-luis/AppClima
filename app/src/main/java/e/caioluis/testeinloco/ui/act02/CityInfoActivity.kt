@@ -38,8 +38,8 @@ class CityInfoActivity : AppCompatActivity(), CityInfoContract.CView {
 
         info_tv_city_name.text = city.name
         info_tv_weather_desc.text = city.description
-        info_tv_temp_max.text = city.temp.celcius_max
-        info_tv_temp_min.text = city.temp.celcius_min
+        info_tv_temp_max.text = city.temperature.celcius_max
+        info_tv_temp_min.text = city.temperature.celcius_min
     }
 }
 

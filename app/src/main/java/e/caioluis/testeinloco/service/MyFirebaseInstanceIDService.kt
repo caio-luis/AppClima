@@ -11,8 +11,8 @@ class MyFirebaseInstanceIDService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
 
-        val data : Map <String, String>  = remoteMessage.getData()
-        val pushContent : PushMessage = InLocoEngagement.decodeReceivedMessage(this, data);
+        val data : Map <String, String>  = remoteMessage.data
+        val pushContent : PushMessage = InLocoEngagement.decodeReceivedMessage(this, data)
 
         InLocoEngagement.presentNotification(
             this,
@@ -24,11 +24,11 @@ class MyFirebaseInstanceIDService : FirebaseMessagingService() {
 
     override fun onNewToken(firebaseToken : String)
     {
-        if (!firebaseToken.isEmpty()) {
+        if (firebaseToken.isNotEmpty()) {
             val pushProvider : PushProvider = FirebasePushProvider.Builder()
                 .setFirebaseToken(firebaseToken)
-                .build();
-            InLocoEngagement.setPushProvider(this, pushProvider);
+                .build()
+            InLocoEngagement.setPushProvider(this, pushProvider)
         }
     }
 }

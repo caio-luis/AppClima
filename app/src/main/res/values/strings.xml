@@ -7,5 +7,6 @@
     <string name="ci_title_max_temp">Temp. Máxima:</string>
     <string name="ci_label_unavailable_message">Indisponível</string>
     <string name="ci_title_condition">Condição:</string>
+    <string name="error_message_no_nearby_cities">Não há cidades próximas ao ponto selecionado!</string>
 
 </resources>

@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.firebase.iid.FirebaseInstanceId
@@ -81,7 +82,6 @@ class MainActivity : AppCompatActivity(), MainActivityContract.IView {
                 return@setOnClickListener
 
             mPresenter.startApiRequest()
-
         }
 
         bs_btn_show_list.setOnClickListener {
@@ -126,5 +126,10 @@ class MainActivity : AppCompatActivity(), MainActivityContract.IView {
         mIntent.putExtra("data", data)
 
         startActivity(mIntent)
+    }
+
+    override fun showProgressBar(state: Boolean){
+
+        mapfrag_progress_bar.isVisible = state
     }
 }

@@ -10,14 +10,14 @@ class CityInfoPresenter (
 
     override fun processData(city: City) {
 
-        city.temp.temp_max.let {
+        city.temperature.temp_max.let {
 
-            city.temp.celcius_max = kelvinToCelcius(it)
+            city.temperature.celcius_max = kelvinToCelcius(it)
         }
 
-        city.temp.temp_min.let {
+        city.temperature.temp_min.let {
 
-            city.temp.celcius_min = kelvinToCelcius(it)
+            city.temperature.celcius_min = kelvinToCelcius(it)
         }
 
         city.weather.first().let {

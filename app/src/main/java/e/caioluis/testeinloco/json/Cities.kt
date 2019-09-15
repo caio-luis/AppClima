@@ -7,6 +7,7 @@ data class Cities(
 
     @SerializedName("list")
     val list : ArrayList<City>
+
 ): Serializable
 
 data class City (
@@ -16,7 +17,7 @@ data class City (
     @SerializedName("weather")
     val weather : ArrayList<Weather>,
     @SerializedName("main")
-    val temp : Temperature,
+    val temperature : Temperature,
     @SerializedName("name")
     val name : String,
 

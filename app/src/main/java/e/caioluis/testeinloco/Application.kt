@@ -13,14 +13,14 @@ class MyApplication : Application() {
 
         val options = InLocoEngagementOptions.getInstance(this)
 
-        options.applicationId = "48df73b4-1c67-4b4d-9ace-3c1c98aadd3f"
+        options.applicationId = Constants.APPLICATION_ID
         options.isLogEnabled = true
 
         InLocoEngagement.init(this, options)
 
         val firebaseToken = FirebaseInstanceId.getInstance().token
 
-        if (firebaseToken != null && !firebaseToken.isEmpty()) {
+        if (firebaseToken != null && firebaseToken.isNotEmpty()) {
             val pushProvider = FirebasePushProvider.Builder()
                 .setFirebaseToken(firebaseToken)
                 .build()

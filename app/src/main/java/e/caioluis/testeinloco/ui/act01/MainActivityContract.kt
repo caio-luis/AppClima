@@ -11,6 +11,7 @@ interface MainActivityContract {
         fun showToastMessage(message: String)
         fun showList(list: ArrayList<City>)
         fun execNav(data: City)
+        fun showProgressBar(state: Boolean)
     }
 
     interface IPresenter {
@@ -23,6 +24,6 @@ interface MainActivityContract {
         fun setBottomSheetState(state: Boolean)
         fun setBottomSheetConfigs()
         fun hasMarker(): Boolean
-        fun getCityData(city : City)
+        fun getCityData(city: City)
     }
 }
