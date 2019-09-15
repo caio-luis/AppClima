@@ -9,8 +9,8 @@ object Constants {
 
 object ListInfo {
 
-    const val MIN_TEMP = "Min. temperature"
-    const val MAX_TEMP = "Max. temperature"
+    const val MIN_TEMP = "Min. temp"
+    const val MAX_TEMP = "Max. temp"
     const val WEATHER_DESC = "Weather description"
     const val CITY_NAME = "City name"
 }

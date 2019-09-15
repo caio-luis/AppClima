@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Teste In Loco</string>
+    <string name="bs_title_nearby_cities">Cidades próximas</string>
+    <string name="mapf_button_label_search">Buscar</string>
+    <string name="ci_title_climate_information">Informações climáticas:</string>
+    <string name="ci_title_min_temp">Temp. Mínima:</string>
+    <string name="ci_title_max_temp">Temp. Máxima:</string>
+    <string name="ci_label_unavailable_message">Indisponível</string>
+    <string name="ci_title_condition">Condição:</string>
+
 </resources>

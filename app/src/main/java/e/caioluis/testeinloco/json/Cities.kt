@@ -1,24 +1,44 @@
 package e.caioluis.testeinloco.json
 
+import com.google.gson.annotations.SerializedName
+import java.io.Serializable
+
 data class Cities(
+
+    @SerializedName("list")
     val list : ArrayList<City>
-)
+): Serializable
 
-data class City(
+data class City (
 
+    @SerializedName("id")
     val id : Int,
+    @SerializedName("weather")
     val weather : ArrayList<Weather>,
-    val main : Temperature,
-    val name : String
-)
+    @SerializedName("main")
+    val temp : Temperature,
+    @SerializedName("name")
+    val name : String,
+
+    var description: String
+
+)  : Serializable
 
 data class Weather(
 
+    @SerializedName("description")
     val description: String
-)
+
+) : Serializable
 
 data class Temperature (
 
+    @SerializedName("temp_min")
     val temp_min : Double,
-    val temp_max : Double
-)
+    @SerializedName("temp_max")
+    val temp_max : Double,
+
+    var celcius_min: String,
+    var celcius_max: String
+
+): Serializable
