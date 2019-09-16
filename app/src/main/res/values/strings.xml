@@ -8,5 +8,11 @@
     <string name="ci_label_unavailable_message">Indisponível</string>
     <string name="ci_title_condition">Condição:</string>
     <string name="error_message_no_nearby_cities">Não há cidades próximas ao ponto selecionado!</string>
+    <string name="alert_message_permission_denied">Sem a permissão de localização, o app não pode ser inicializado.
+        Caso tenha sido marcada a opção \'Não mostrar novamente\' ao negar, é preciso dar a
+        permissão manualmente nas configurações do aparelho.
+    </string>
+    <string name="alert_title_permission_denied">Atenção!</string>
+    <string name="alert_button_exit">Sair do app</string>
 
 </resources>

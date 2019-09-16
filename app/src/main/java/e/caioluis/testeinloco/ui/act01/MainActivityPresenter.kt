@@ -43,13 +43,13 @@ class MainActivityPresenter(
 
     private var markerLatLng = LatLng(0.0, 0.0)
 
-    var willShowDialog = true
+    private var willShowDialog = true
 
     override fun processPermissionResult(result: IntArray) {
 
         if (result.isEmpty() || result.first() == PackageManager.PERMISSION_DENIED) {
 
-            processAlertDialog()
+            beginAlertDialog()
 
             return
         }
@@ -60,14 +60,14 @@ class MainActivityPresenter(
         willShowDialog = true
     }
 
-    private fun processAlertDialog() {
+    private fun beginAlertDialog() {
 
         if (willShowDialog) {
 
             val builder = AlertDialog.Builder(context)
 
-            builder.setTitle("Atenção!")
-            builder.setMessage("Sem a permissão do GPS, o app não pode ser inicializado. Ativar permissão do GPS?")
+            builder.setTitle(context.getString(R.string.alert_title_permission_denied))
+            builder.setMessage(context.getString(R.string.alert_message_permission_denied))
             builder.setCancelable(true)
 
             builder.setPositiveButton(android.R.string.yes) { dialog, which ->
@@ -76,11 +76,10 @@ class MainActivityPresenter(
                 willShowDialog = false
             }
 
-            builder.setNegativeButton("Sair do app") { dialog, which ->
+            builder.setNegativeButton(context.getString(R.string.alert_button_exit)) { dialog, which ->
 
                 (mView as Activity).finish()
             }
-
             builder.show()
         }
     }
@@ -140,7 +139,6 @@ class MainActivityPresenter(
 
                         return
                     }
-
                     mView.showProgressBar(false)
 
                     refreshAdapterList(cities.list)
