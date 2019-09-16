@@ -10,10 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.firebase.iid.FirebaseInstanceId
-import com.inlocomedia.android.engagement.InLocoEngagement
-import com.inlocomedia.android.engagement.InLocoEngagementOptions
-import com.inlocomedia.android.engagement.request.FirebasePushProvider
 import e.caioluis.testeinloco.R
 import e.caioluis.testeinloco.adapter.CitiesListAdapter
 import e.caioluis.testeinloco.json.City
@@ -33,7 +29,6 @@ class MainActivity : AppCompatActivity(), MainActivityContract.IView {
         setContentView(R.layout.activity_main)
 
         initVars()
-        initActions()
     }
 
     private fun initVars() {
@@ -51,16 +46,19 @@ class MainActivity : AppCompatActivity(), MainActivityContract.IView {
             this,
             bottomSheet
         )
+
+        cityAdapter = CitiesListAdapter(
+            context,
+            R.layout.list_item,
+            mPresenter.getCityList()
+        )
+        bottom_sheet_lv_cities.adapter = cityAdapter
+
+        askGPSPermission()
     }
 
     @SuppressLint("MissingPermission")
     private fun initActions() {
-
-        if (!mPresenter.hasGpsPermission()) {
-
-            mPresenter.requestGPSPermission()
-            return
-        }
 
         mPresenter.setBottomSheetConfigs()
 
@@ -102,21 +100,25 @@ class MainActivity : AppCompatActivity(), MainActivityContract.IView {
         }
     }
 
+    override fun askGPSPermission() {
+
+        if (!mPresenter.hasGpsPermission()) {
+
+            mPresenter.requestGPSPermission()
+            return
+        }
+        startApp()
+    }
+
     override fun showToastMessage(message: String) {
 
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
-    override fun showList(list: ArrayList<City>) {
+    override fun showList() {
 
-        cityAdapter = CitiesListAdapter(
-            context,
-            R.layout.list_item,
-            list
-        )
-        bottom_sheet_lv_cities.adapter = cityAdapter
+        cityAdapter.notifyDataSetChanged()
 
-        mPresenter.setBottomSheetState(true)
     }
 
     override fun execNav(data: City) {
@@ -128,8 +130,18 @@ class MainActivity : AppCompatActivity(), MainActivityContract.IView {
         startActivity(mIntent)
     }
 
-    override fun showProgressBar(state: Boolean){
+    override fun showProgressBar(state: Boolean) {
 
         mapfrag_progress_bar.isVisible = state
+    }
+
+    override fun startApp() {
+        initActions()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+
+        mPresenter.showGPSPermissionDialog()
+        mPresenter.processPermissionResult(grantResults)
     }
 }

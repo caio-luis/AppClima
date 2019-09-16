@@ -3,6 +3,7 @@ package e.caioluis.testeinloco.ui.act01
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.LocationManager
@@ -34,11 +35,55 @@ class MainActivityPresenter(
 
 ) : MainActivityContract.IPresenter {
 
+    private val cityList : ArrayList<City> = ArrayList()
+
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
     private val bSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(bottomSheet)
 
     private var markerLatLng = LatLng(0.0, 0.0)
+
+    var willShowDialog = true
+
+    override fun processPermissionResult(result: IntArray) {
+
+        if (result.isEmpty() || result.first() == PackageManager.PERMISSION_DENIED) {
+
+            processAlertDialog()
+
+            return
+        }
+        mView.startApp()
+    }
+
+    override fun showGPSPermissionDialog() {
+        willShowDialog = true
+    }
+
+    private fun processAlertDialog() {
+
+        if (willShowDialog) {
+
+            val builder = AlertDialog.Builder(context)
+
+            builder.setTitle("Atenção!")
+            builder.setMessage("Sem a permissão do GPS, o app não pode ser inicializado. Ativar permissão do GPS?")
+            builder.setCancelable(true)
+
+            builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+
+                mView.askGPSPermission()
+                willShowDialog = false
+            }
+
+            builder.setNegativeButton("Sair do app") { dialog, which ->
+
+                (mView as Activity).finish()
+            }
+
+            builder.show()
+        }
+    }
 
     override fun hasGpsPermission(): Boolean {
 
@@ -97,9 +142,25 @@ class MainActivityPresenter(
                     }
 
                     mView.showProgressBar(false)
-                    mView.showList(cities.list)
+
+                    refreshAdapterList(cities.list)
                 }
             })
+    }
+
+    override fun getCityList(): ArrayList<City> {
+        return cityList
+    }
+
+    private fun refreshAdapterList(list: ArrayList<City>){
+
+        cityList.clear()
+
+        for (city in list){
+            cityList.add(city)
+        }
+        setBottomSheetState(true)
+        mView.showList()
     }
 
     override fun setBottomSheetConfigs() {
