@@ -9,16 +9,20 @@ import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.view.View
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import e.caioluis.testeinloco.Constants
 import e.caioluis.testeinloco.R
+import e.caioluis.testeinloco.adapter.CitiesListAdapter
 import e.caioluis.testeinloco.json.Cities
 import e.caioluis.testeinloco.json.City
 import e.caioluis.testeinloco.web.WebAPI
+import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,30 +34,33 @@ import java.util.concurrent.TimeUnit
 class MainActivityPresenter(
 
     private val context: Context,
-    private val mView: MainActivityContract.IView,
-    bottomSheet: View
+    private val mView: MainActivityContract.IView
 
 ) : MainActivityContract.IPresenter {
 
-    private val cityList : ArrayList<City> = ArrayList()
-
+    private lateinit var googleMap: GoogleMap
+    private val contextActivity = context as Activity
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-
+    private val bottomSheet = contextActivity.findViewById<View>(R.id.frag_bottom_sheet)
     private val bSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(bottomSheet)
-
+    private lateinit var cityAdapter: CitiesListAdapter
+    private val cityList: ArrayList<City> = ArrayList()
     private var markerLatLng = LatLng(0.0, 0.0)
-
     private var willShowDialog = true
+    private var mapFragment: SupportMapFragment =
+        (context as FragmentActivity).supportFragmentManager.findFragmentById(R.id.frag_map)
+                as SupportMapFragment
 
     override fun processPermissionResult(result: IntArray) {
+
+        askGPSPermission()
 
         if (result.isEmpty() || result.first() == PackageManager.PERMISSION_DENIED) {
 
             beginAlertDialog()
-
             return
         }
-        mView.startApp()
+        startApp()
     }
 
     override fun showGPSPermissionDialog() {
@@ -72,7 +79,7 @@ class MainActivityPresenter(
 
             builder.setPositiveButton(android.R.string.yes) { dialog, which ->
 
-                mView.askGPSPermission()
+                askGPSPermission()
                 willShowDialog = false
             }
 
@@ -107,7 +114,6 @@ class MainActivityPresenter(
         markerLatLng = markerLatLgn
 
         googleMap.clear()
-
         googleMap.addMarker(MarkerOptions().position(markerLatLgn))
     }
 
@@ -150,15 +156,15 @@ class MainActivityPresenter(
         return cityList
     }
 
-    private fun refreshAdapterList(list: ArrayList<City>){
+    private fun refreshAdapterList(list: ArrayList<City>) {
 
         cityList.clear()
 
-        for (city in list){
+        for (city in list) {
             cityList.add(city)
         }
         setBottomSheetState(true)
-        mView.showList()
+        showList()
     }
 
     override fun setBottomSheetConfigs() {
@@ -199,7 +205,10 @@ class MainActivityPresenter(
 
         // centro de São Paulo
         val myLocation = locationManager
-            .getLastKnownLocation(LocationManager.GPS_PROVIDER) ?: return LatLng(-23.533773, -46.625290)
+            .getLastKnownLocation(LocationManager.GPS_PROVIDER) ?: return LatLng(
+            -23.533773,
+            -46.625290
+        )
 
         return LatLng(myLocation.latitude, myLocation.longitude)
     }
@@ -236,5 +245,67 @@ class MainActivityPresenter(
             .build()
 
         return retroFitAPI.create(WebAPI::class.java)
+    }
+
+    override fun startApp() {
+
+        if(!askGPSPermission())
+            return
+
+        initAdapter()
+        setBottomSheetConfigs()
+
+        mapFragment.getMapAsync { it ->
+
+            googleMap = it
+
+            goToMyLocation(googleMap)
+
+            googleMap.setOnMapClickListener {
+
+                setMapMarker(it, googleMap)
+            }
+        }
+    }
+
+    fun initAdapter() {
+        cityAdapter = CitiesListAdapter(
+            context,
+            R.layout.list_item,
+            getCityList()
+        )
+        contextActivity.bottom_sheet_lv_cities.adapter = cityAdapter
+    }
+
+    override fun showList() {
+        cityAdapter.notifyDataSetChanged()
+    }
+
+    override fun askGPSPermission() : Boolean{
+
+        if (!hasGpsPermission()) {
+            requestGPSPermission()
+            return false
+        }
+        return true
+    }
+
+    override fun searchClicked() {
+        if (!hasMarker())
+            return
+
+        startApiRequest()
+    }
+
+    override fun openListClicked() {
+        setBottomSheetState(true)
+    }
+
+    override fun closeClicked() {
+        setBottomSheetState(false)
+    }
+
+    override fun listItemClicked(position: Int) {
+
     }
 }

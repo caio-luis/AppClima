@@ -9,26 +9,30 @@ interface MainActivityContract {
     interface IView {
 
         fun showToastMessage(message: String)
-        fun showList()
-        fun execNav(data: City)
         fun showProgressBar(state: Boolean)
-        fun askGPSPermission()
-        fun startApp()
+        fun execNav(data: City)
     }
 
     interface IPresenter {
 
-        fun getCityList() : ArrayList<City>
-        fun showGPSPermissionDialog()
-        fun processPermissionResult(result : IntArray)
-        fun hasGpsPermission(): Boolean
-        fun requestGPSPermission()
-        fun goToMyLocation(googleMap: GoogleMap)
         fun setMapMarker(markerLatLgn: LatLng, googleMap: GoogleMap)
-        fun startApiRequest()
+        fun processPermissionResult(result : IntArray)
+        fun goToMyLocation(googleMap: GoogleMap)
         fun setBottomSheetState(state: Boolean)
+        fun getCityList() : ArrayList<City>
+        fun listItemClicked(position: Int)
+        fun askGPSPermission() : Boolean
+        fun hasGpsPermission(): Boolean
+        fun showGPSPermissionDialog()
         fun setBottomSheetConfigs()
-        fun hasMarker(): Boolean
         fun getCityData(city: City)
+        fun requestGPSPermission()
+        fun hasMarker(): Boolean
+        fun startApiRequest()
+        fun openListClicked()
+        fun searchClicked()
+        fun closeClicked()
+        fun showList()
+        fun startApp()
     }
 }
