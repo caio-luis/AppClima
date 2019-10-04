@@ -39,21 +39,20 @@ class MainActivityPresenter(
 ) : MainActivityContract.IPresenter {
 
     private lateinit var googleMap: GoogleMap
-    private val contextActivity = context as Activity
-    private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    private val bottomSheet = contextActivity.findViewById<View>(R.id.frag_bottom_sheet)
-    private val bSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(bottomSheet)
     private lateinit var cityAdapter: CitiesListAdapter
+    private val cActivity = context as Activity
+    private val bottomSheet = cActivity.findViewById<View>(R.id.frag_bottom_sheet)
+    private val bSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(bottomSheet)
     private val cityList: ArrayList<City> = ArrayList()
     private var markerLatLng = LatLng(0.0, 0.0)
     private var willShowDialog = true
+    private val locationManager =
+        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     private var mapFragment: SupportMapFragment =
         (context as FragmentActivity).supportFragmentManager.findFragmentById(R.id.frag_map)
                 as SupportMapFragment
 
     override fun processPermissionResult(result: IntArray) {
-
-        askGPSPermission()
 
         if (result.isEmpty() || result.first() == PackageManager.PERMISSION_DENIED) {
 
@@ -61,10 +60,6 @@ class MainActivityPresenter(
             return
         }
         startApp()
-    }
-
-    override fun showGPSPermissionDialog() {
-        willShowDialog = true
     }
 
     private fun beginAlertDialog() {
@@ -77,13 +72,12 @@ class MainActivityPresenter(
             builder.setMessage(context.getString(R.string.alert_message_permission_denied))
             builder.setCancelable(true)
 
-            builder.setPositiveButton(android.R.string.yes) { dialog, which ->
+            builder.setPositiveButton(android.R.string.yes) { _, _ ->
 
-                askGPSPermission()
-                willShowDialog = false
+                willShowDialog = !askGPSPermission()
             }
 
-            builder.setNegativeButton(context.getString(R.string.alert_button_exit)) { dialog, which ->
+            builder.setNegativeButton(context.getString(R.string.alert_button_exit)) { _, _ ->
 
                 (mView as Activity).finish()
             }
@@ -128,26 +122,28 @@ class MainActivityPresenter(
 
                 override fun onFailure(call: Call<Cities>, t: Throwable) {
 
-                    mView.showProgressBar(false)
+                    with(mView) {
 
-                    mView.showToastMessage(t.message.toString())
+                        showProgressBar(false)
+                        showToastMessage(t.message.toString())
+                    }
                 }
 
                 override fun onResponse(call: Call<Cities>, response: Response<Cities>) {
 
-                    val cities = response.body()
+                    with(mView) {
 
-                    if (cities == null) {
+                        val cities = response.body()
 
-                        mView.showToastMessage(context.getString(R.string.error_message_no_nearby_cities))
+                        if (cities == null) {
 
-                        mView.showProgressBar(false)
-
-                        return
+                            showToastMessage(context.getString(R.string.error_message_no_nearby_cities))
+                            showProgressBar(false)
+                            return
+                        }
+                        showProgressBar(false)
+                        refreshAdapterList(cities.list)
                     }
-                    mView.showProgressBar(false)
-
-                    refreshAdapterList(cities.list)
                 }
             })
     }
@@ -169,7 +165,7 @@ class MainActivityPresenter(
 
     override fun setBottomSheetConfigs() {
 
-        bSheetBehavior.setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        bSheetBehavior.bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
 
             override fun onSlide(view: View, slideOffset: Float) {
             }
@@ -181,7 +177,7 @@ class MainActivityPresenter(
                     bSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                 }
             }
-        })
+        }
     }
 
     override fun setBottomSheetState(state: Boolean) {
@@ -202,25 +198,20 @@ class MainActivityPresenter(
 
     @SuppressLint("MissingPermission")
     private fun getMyLocationLatLng(): LatLng {
-
         // centro de São Paulo
         val myLocation = locationManager
             .getLastKnownLocation(LocationManager.GPS_PROVIDER) ?: return LatLng(
             -23.533773,
             -46.625290
         )
-
         return LatLng(myLocation.latitude, myLocation.longitude)
     }
 
     override fun hasMarker(): Boolean {
 
-        if (markerLatLng != LatLng(0.0, 0.0)) {
+        if (markerLatLng != LatLng(0.0, 0.0)) return true
 
-            return true
-        }
         mView.showToastMessage("Selecione um ponto no mapa!")
-
         return false
     }
 
@@ -249,52 +240,51 @@ class MainActivityPresenter(
 
     override fun startApp() {
 
-        if(!askGPSPermission())
+        if (!askGPSPermission())
             return
 
         initAdapter()
         setBottomSheetConfigs()
 
-        mapFragment.getMapAsync { it ->
+        mapFragment.getMapAsync { map ->
 
-            googleMap = it
+            googleMap = map
 
             goToMyLocation(googleMap)
 
-            googleMap.setOnMapClickListener {
+            googleMap.setOnMapClickListener { latLng ->
 
-                setMapMarker(it, googleMap)
+                setMapMarker(latLng, googleMap)
             }
         }
     }
 
-    fun initAdapter() {
+    private fun initAdapter() {
         cityAdapter = CitiesListAdapter(
             context,
             R.layout.list_item,
             getCityList()
         )
-        contextActivity.bottom_sheet_lv_cities.adapter = cityAdapter
+        cActivity.bottom_sheet_lv_cities.adapter = cityAdapter
     }
 
     override fun showList() {
         cityAdapter.notifyDataSetChanged()
     }
 
-    override fun askGPSPermission() : Boolean{
+    override fun askGPSPermission(): Boolean {
 
-        if (!hasGpsPermission()) {
+        return if (!hasGpsPermission()) {
             requestGPSPermission()
-            return false
-        }
-        return true
+            false
+        } else true
     }
 
     override fun searchClicked() {
-        if (!hasMarker())
-            return
 
-        startApiRequest()
+        if (hasMarker()) {
+            startApiRequest()
+        }
     }
 
     override fun openListClicked() {
@@ -303,9 +293,5 @@ class MainActivityPresenter(
 
     override fun closeClicked() {
         setBottomSheetState(false)
-    }
-
-    override fun listItemClicked(position: Int) {
-
     }
 }

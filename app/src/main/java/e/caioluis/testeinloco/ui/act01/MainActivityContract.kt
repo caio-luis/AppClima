@@ -20,10 +20,8 @@ interface MainActivityContract {
         fun goToMyLocation(googleMap: GoogleMap)
         fun setBottomSheetState(state: Boolean)
         fun getCityList() : ArrayList<City>
-        fun listItemClicked(position: Int)
         fun askGPSPermission() : Boolean
         fun hasGpsPermission(): Boolean
-        fun showGPSPermissionDialog()
         fun setBottomSheetConfigs()
         fun getCityData(city: City)
         fun requestGPSPermission()

@@ -6,11 +6,15 @@ import com.inlocomedia.android.engagement.InLocoEngagement
 import com.inlocomedia.android.engagement.InLocoEngagementOptions
 import com.inlocomedia.android.engagement.request.FirebasePushProvider
 
-class MyApplication : Application() {
+open class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
 
+        createInLocoIntegration()
+    }
+
+    private fun createInLocoIntegration() {
         val options = InLocoEngagementOptions.getInstance(this)
 
         options.applicationId = Constants.APPLICATION_ID
