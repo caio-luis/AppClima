@@ -6,9 +6,9 @@ import java.io.Serializable
 data class Cities(
 
     @SerializedName("list")
-    val list : ArrayList<City>
+    val list: ArrayList<City>
 
-): Serializable
+) : Serializable
 
 
 

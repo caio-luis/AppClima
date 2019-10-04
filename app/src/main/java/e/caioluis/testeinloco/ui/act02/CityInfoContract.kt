@@ -4,14 +4,11 @@ import e.caioluis.testeinloco.json.City
 
 interface CityInfoContract {
 
-    interface CView {
+    interface View
 
-        fun setOnTextView(city: City)
-    }
+    interface Presenter {
 
-    interface CPresenter {
-
-        fun processData(city: City)
-        fun kelvinToCelcius(value: Double): String
+        fun dataReceived(city: City)
+        fun kelvinToCelsius(value: Double): String
     }
 }

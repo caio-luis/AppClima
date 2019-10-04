@@ -8,10 +8,10 @@ import retrofit2.http.Query
 
 interface WebAPI {
 
-    @GET ("data/2.5/find?cnt=15&APPID=${Constants.OPEN_WEATHER_KEY}")
+    @GET("data/2.5/find?cnt=15&APPID=${Constants.OPEN_WEATHER_KEY}")
 
     fun syncCallNearbyCitiesByLatLong(
-        @Query("lat") latitude : Double,
-        @Query("lon") longitude : Double
-    ) : Call<Cities>
+        @Query("lat") latitude: Double,
+        @Query("lon") longitude: Double
+    ): Call<Cities>
 }

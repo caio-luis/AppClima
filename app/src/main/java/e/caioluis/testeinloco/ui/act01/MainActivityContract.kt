@@ -16,11 +16,11 @@ interface MainActivityContract {
     interface IPresenter {
 
         fun setMapMarker(markerLatLgn: LatLng, googleMap: GoogleMap)
-        fun processPermissionResult(result : IntArray)
+        fun processPermissionResult(result: IntArray)
         fun goToMyLocation(googleMap: GoogleMap)
         fun setBottomSheetState(state: Boolean)
-        fun getCityList() : ArrayList<City>
-        fun askGPSPermission() : Boolean
+        fun getCityList(): ArrayList<City>
+        fun askGPSPermission(): Boolean
         fun hasGpsPermission(): Boolean
         fun setBottomSheetConfigs()
         fun getCityData(city: City)

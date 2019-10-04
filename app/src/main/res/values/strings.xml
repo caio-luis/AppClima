@@ -14,5 +14,6 @@
     </string>
     <string name="alert_title_permission_denied">Atenção!</string>
     <string name="alert_button_exit">Sair do app</string>
+    <string name="list_item_city_name">Nome da Cidade</string>
 
 </resources>

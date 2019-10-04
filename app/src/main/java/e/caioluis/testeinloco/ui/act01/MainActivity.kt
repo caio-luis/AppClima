@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import e.caioluis.testeinloco.Constants
 import e.caioluis.testeinloco.R
 import e.caioluis.testeinloco.json.City
 import e.caioluis.testeinloco.ui.act02.CityInfoActivity
@@ -69,7 +70,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
 
         val mIntent = Intent(context, CityInfoActivity::class.java)
 
-        mIntent.putExtra("data", data)
+        mIntent.putExtra(Constants.CITY_DATA, data)
 
         startActivity(mIntent)
     }
