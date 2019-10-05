@@ -16,20 +16,15 @@ class CityInfoActivity : AppCompatActivity(), CityInfoContract.View {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_city_info)
 
-        initVars()
-        initActions()
-    }
-
-    private fun initVars() {
-
         context = this@CityInfoActivity
         presenter = CityInfoPresenter(this)
+
+        receiveIntentData()
     }
 
-    private fun initActions() {
+    private fun receiveIntentData() {
 
         val data = intent.getSerializableExtra(Constants.CITY_DATA) as City
-
         presenter.dataReceived(data)
     }
 }

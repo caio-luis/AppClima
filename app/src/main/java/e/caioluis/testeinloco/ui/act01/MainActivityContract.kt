@@ -8,7 +8,7 @@ interface MainActivityContract {
 
         fun showToastMessage(message: String)
         fun showProgressBar(show: Boolean)
-        fun execNav(data: City)
+        fun execNavigation(data: City)
     }
 
     interface IPresenter {

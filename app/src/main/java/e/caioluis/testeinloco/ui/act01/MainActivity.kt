@@ -22,21 +22,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initVars()
-        initActions()
-    }
-
-    private fun initVars() {
-
         context = this@MainActivity
-
-        presenter = MainActivityPresenter(
-            context,
-            this
-        )
-    }
-
-    private fun initActions() {
+        presenter = MainActivityPresenter(context, this)
 
         presenter.startApp()
 
@@ -62,11 +49,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
     }
 
     override fun showToastMessage(message: String) {
-
         Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
-    override fun execNav(data: City) {
+    override fun execNavigation(data: City) {
 
         val mIntent = Intent(context, CityInfoActivity::class.java)
 
@@ -76,7 +62,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
     }
 
     override fun showProgressBar(show: Boolean) {
-
         mapfrag_progress_bar.isVisible = show
     }
 

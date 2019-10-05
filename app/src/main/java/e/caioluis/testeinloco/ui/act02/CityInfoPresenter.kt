@@ -5,44 +5,41 @@ import e.caioluis.testeinloco.json.City
 import kotlinx.android.synthetic.main.activity_city_info.*
 
 class CityInfoPresenter(
-
-    private val view: CityInfoContract.View
+    view: CityInfoContract.View
 
 ) : CityInfoContract.Presenter {
 
-    lateinit var mCity: City
+    private lateinit var mCity: City
+    private val activity = view as Activity
 
     override fun dataReceived(city: City) {
 
-        city.temperature.temp_max.let { tempMax ->
+        with(city) {
 
-            city.temperature.celsius_max = kelvinToCelsius(tempMax)
+            temperature.temp_max.let { tempMax ->
+                temperature.celsius_max = kelvinToCelsius(tempMax)
+            }
+
+            temperature.temp_min.let { tempMin ->
+                temperature.celsius_min = kelvinToCelsius(tempMin)
+            }
+            weather.first().let {
+                description = it.description
+            }
         }
-
-        city.temperature.temp_min.let { tempMin ->
-
-            city.temperature.celsius_min = kelvinToCelsius(tempMin)
-        }
-
-        city.weather.first().let {
-            city.description = it.description
-        }
-
         mCity = city
         setTexts()
     }
 
     private fun setTexts() {
-
-        val activity = view as Activity
-
-        with(activity) {
-
-            info_tv_city_name.text = mCity.name
-            info_tv_weather_desc.text = mCity.description
-            info_tv_temp_max.text = mCity.temperature.celsius_max
-            info_tv_temp_min.text = mCity.temperature.celsius_min
-        }
+        with(activity, {
+            with(mCity) {
+                info_tv_city_name.text = name
+                info_tv_weather_desc.text = description
+                info_tv_temp_max.text = temperature.celsius_max
+                info_tv_temp_min.text = temperature.celsius_min
+            }
+        })
     }
 
     override fun kelvinToCelsius(value: Double): String {

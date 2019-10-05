@@ -41,7 +41,7 @@ class MainActivityPresenter(
     private lateinit var cityAdapter: CitiesListAdapter
 
     private var willShowDialog = true
-    private var markerLatLng = LatLng(0.0, 0.0)
+    private var actualLatLng = LatLng(0.0, 0.0)
     private val cityList: ArrayList<City> = ArrayList()
     private val mainActivity = context as Activity
     private var fragActivity = context as FragmentActivity
@@ -101,7 +101,7 @@ class MainActivityPresenter(
         val permission = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
 
         ActivityCompat.requestPermissions(
-            context as Activity,
+            mainActivity,
             permission,
             0
         )
@@ -131,7 +131,7 @@ class MainActivityPresenter(
 
         val webAPI = retrofitClient()
 
-        webAPI.syncCallNearbyCitiesByLatLong(markerLatLng.latitude, markerLatLng.longitude)
+        webAPI.syncCallNearbyCitiesByLatLong(actualLatLng.latitude, actualLatLng.longitude)
             .enqueue(object : Callback<Cities> {
 
                 override fun onFailure(call: Call<Cities>, t: Throwable) {
@@ -173,43 +173,38 @@ class MainActivityPresenter(
 
             override fun onStateChanged(view: View, newState: Int) {
 
-                if (newState == BottomSheetBehavior.STATE_DRAGGING) {
-
+                if (newState == BottomSheetBehavior.STATE_DRAGGING)
                     bSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
             }
         }
     }
 
-    private fun setBottomSheetState(state: Boolean) {
+    private fun setBottomSheetState(show: Boolean) {
 
-        if (state)
+        if (show)
             bSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
         else
             bSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
     }
 
     private fun setMapMarker(markerLatLgn: LatLng, googleMap: GoogleMap) {
-        markerLatLng = markerLatLgn
+
+        actualLatLng = markerLatLgn
 
         googleMap.clear()
         googleMap.addMarker(MarkerOptions().position(markerLatLgn))
     }
 
     private fun hasMarker(): Boolean {
-
-        if (markerLatLng != LatLng(0.0, 0.0)) return true
-
-        mView.showToastMessage("Selecione um ponto no mapa!")
-        return false
+        return if (actualLatLng == LatLng(0.0, 0.0)) {
+            mView.showToastMessage("Selecione um ponto no mapa!")
+            false
+        } else true
     }
 
     private fun goToMyLocation(googleMap: GoogleMap) {
-
-        with(googleMap) {
-            isMyLocationEnabled = true
-            animateCamera(CameraUpdateFactory.newLatLngZoom(getMyLocationLatLng(), 10f))
-        }
+        googleMap.isMyLocationEnabled = true
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(getMyLocationLatLng(), 10f))
     }
 
     @SuppressLint("MissingPermission")
@@ -275,7 +270,7 @@ class MainActivityPresenter(
     }
 
     override fun getCityData(city: City) {
-        mView.execNav(city)
+        mView.execNavigation(city)
     }
 
     override fun searchClicked() {
