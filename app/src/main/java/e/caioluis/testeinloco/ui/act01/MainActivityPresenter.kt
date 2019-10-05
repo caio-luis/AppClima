@@ -32,7 +32,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 class MainActivityPresenter(
-
     private val context: Context,
     private val mView: MainActivityContract.IView
 
@@ -40,52 +39,56 @@ class MainActivityPresenter(
 
     private lateinit var googleMap: GoogleMap
     private lateinit var cityAdapter: CitiesListAdapter
-    private val cActivity = context as Activity
-    private val bottomSheet = cActivity.findViewById<View>(R.id.frag_bottom_sheet)
-    private val bSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(bottomSheet)
-    private val cityList: ArrayList<City> = ArrayList()
-    private var markerLatLng = LatLng(0.0, 0.0)
+
     private var willShowDialog = true
+    private var markerLatLng = LatLng(0.0, 0.0)
+    private val cityList: ArrayList<City> = ArrayList()
+    private val mainActivity = context as Activity
+    private var fragActivity = context as FragmentActivity
+
+    private val bottomSheet = mainActivity.findViewById<View>(R.id.frag_bottom_sheet)
+    private val bSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(bottomSheet)
+
     private val locationManager =
         context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    private var mapFragment: SupportMapFragment =
-        (context as FragmentActivity).supportFragmentManager.findFragmentById(R.id.frag_map)
-                as SupportMapFragment
+    private var mapFragment =
+        fragActivity.supportFragmentManager.findFragmentById(R.id.frag_map) as SupportMapFragment
+
+    override fun startApp() {
+
+        if (!askGPSPermission())
+            return
+
+        initAdapter()
+        setBottomSheetConfigs()
+
+        mapFragment.getMapAsync { map ->
+
+            googleMap = map
+
+            goToMyLocation(googleMap)
+            setMapClickListener()
+        }
+    }
 
     override fun processPermissionResult(result: IntArray) {
 
         if (result.isEmpty() || result.first() == PackageManager.PERMISSION_DENIED) {
-
-            beginAlertDialog()
+            showAlertDialog()
             return
         }
         startApp()
     }
 
-    private fun beginAlertDialog() {
+    private fun askGPSPermission(): Boolean {
 
-        if (willShowDialog) {
-
-            val builder = AlertDialog.Builder(context)
-
-            builder.setTitle(context.getString(R.string.alert_title_permission_denied))
-            builder.setMessage(context.getString(R.string.alert_message_permission_denied))
-            builder.setCancelable(true)
-
-            builder.setPositiveButton(android.R.string.yes) { _, _ ->
-
-                willShowDialog = !askGPSPermission()
-            }
-
-            builder.setNegativeButton(context.getString(R.string.alert_button_exit)) { _, _ ->
-
-                (mView as Activity).finish()
-            }
-            builder.show()
-        }
+        return if (!hasGpsPermission()) {
+            requestGPSPermission()
+            false
+        } else true
     }
 
-    override fun hasGpsPermission(): Boolean {
+    private fun hasGpsPermission(): Boolean {
 
         return ActivityCompat.checkSelfPermission(
             context,
@@ -93,7 +96,7 @@ class MainActivityPresenter(
         ) == PackageManager.PERMISSION_GRANTED
     }
 
-    override fun requestGPSPermission() {
+    private fun requestGPSPermission() {
 
         val permission = arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
 
@@ -104,14 +107,25 @@ class MainActivityPresenter(
         )
     }
 
-    override fun setMapMarker(markerLatLgn: LatLng, googleMap: GoogleMap) {
-        markerLatLng = markerLatLgn
+    private fun retrofitClient(): WebAPI {
 
-        googleMap.clear()
-        googleMap.addMarker(MarkerOptions().position(markerLatLgn))
+        val client = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .build()
+
+        val retroFitAPI = Retrofit.Builder()
+            .baseUrl(Constants.BASE_URL)
+            .addConverterFactory(
+                GsonConverterFactory.create()
+            ).client(client)
+            .build()
+
+        return retroFitAPI.create(WebAPI::class.java)
     }
 
-    override fun startApiRequest() {
+    private fun startApiRequest() {
 
         mView.showProgressBar(true)
 
@@ -136,7 +150,6 @@ class MainActivityPresenter(
                         val cities = response.body()
 
                         if (cities == null) {
-
                             showToastMessage(context.getString(R.string.error_message_no_nearby_cities))
                             showProgressBar(false)
                             return
@@ -148,27 +161,15 @@ class MainActivityPresenter(
             })
     }
 
-    override fun getCityList(): ArrayList<City> {
+    private fun getCityList(): ArrayList<City> {
         return cityList
     }
 
-    private fun refreshAdapterList(list: ArrayList<City>) {
-
-        cityList.clear()
-
-        for (city in list) {
-            cityList.add(city)
-        }
-        setBottomSheetState(true)
-        showList()
-    }
-
-    override fun setBottomSheetConfigs() {
+    private fun setBottomSheetConfigs() {
 
         bSheetBehavior.bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
 
-            override fun onSlide(view: View, slideOffset: Float) {
-            }
+            override fun onSlide(view: View, slideOffset: Float) {}
 
             override fun onStateChanged(view: View, newState: Int) {
 
@@ -180,7 +181,7 @@ class MainActivityPresenter(
         }
     }
 
-    override fun setBottomSheetState(state: Boolean) {
+    private fun setBottomSheetState(state: Boolean) {
 
         if (state)
             bSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED)
@@ -188,17 +189,32 @@ class MainActivityPresenter(
             bSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED)
     }
 
-    @SuppressLint("MissingPermission")
-    override fun goToMyLocation(googleMap: GoogleMap) {
+    private fun setMapMarker(markerLatLgn: LatLng, googleMap: GoogleMap) {
+        markerLatLng = markerLatLgn
 
-        googleMap.isMyLocationEnabled = true
+        googleMap.clear()
+        googleMap.addMarker(MarkerOptions().position(markerLatLgn))
+    }
 
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(getMyLocationLatLng(), 10f))
+    private fun hasMarker(): Boolean {
+
+        if (markerLatLng != LatLng(0.0, 0.0)) return true
+
+        mView.showToastMessage("Selecione um ponto no mapa!")
+        return false
+    }
+
+    private fun goToMyLocation(googleMap: GoogleMap) {
+
+        with(googleMap) {
+            isMyLocationEnabled = true
+            animateCamera(CameraUpdateFactory.newLatLngZoom(getMyLocationLatLng(), 10f))
+        }
     }
 
     @SuppressLint("MissingPermission")
     private fun getMyLocationLatLng(): LatLng {
-        // centro de São Paulo
+        // latitude e longitude do centro de São Paulo
         val myLocation = locationManager
             .getLastKnownLocation(LocationManager.GPS_PROVIDER) ?: return LatLng(
             -23.533773,
@@ -207,55 +223,21 @@ class MainActivityPresenter(
         return LatLng(myLocation.latitude, myLocation.longitude)
     }
 
-    override fun hasMarker(): Boolean {
+    private fun refreshAdapterList(list: ArrayList<City>) {
 
-        if (markerLatLng != LatLng(0.0, 0.0)) return true
+        cityList.clear()
 
-        mView.showToastMessage("Selecione um ponto no mapa!")
-        return false
+        for (city in list) {
+            cityList.add(city)
+        }
+        setBottomSheetState(true)
+        cityAdapter.notifyDataSetChanged()
     }
 
-    override fun getCityData(city: City) {
+    private fun setMapClickListener() {
+        googleMap.setOnMapClickListener { latLng ->
 
-        mView.execNav(city)
-    }
-
-    private fun retrofitClient(): WebAPI {
-
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .build()
-
-        val retroFitAPI = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(
-                GsonConverterFactory.create()
-            ).client(client)
-            .build()
-
-        return retroFitAPI.create(WebAPI::class.java)
-    }
-
-    override fun startApp() {
-
-        if (!askGPSPermission())
-            return
-
-        initAdapter()
-        setBottomSheetConfigs()
-
-        mapFragment.getMapAsync { map ->
-
-            googleMap = map
-
-            goToMyLocation(googleMap)
-
-            googleMap.setOnMapClickListener { latLng ->
-
-                setMapMarker(latLng, googleMap)
-            }
+            setMapMarker(latLng, googleMap)
         }
     }
 
@@ -265,23 +247,38 @@ class MainActivityPresenter(
             R.layout.list_item,
             getCityList()
         )
-        cActivity.bottom_sheet_lv_cities.adapter = cityAdapter
+        mainActivity.bottom_sheet_lv_cities.adapter = cityAdapter
     }
 
-    override fun showList() {
-        cityAdapter.notifyDataSetChanged()
+    private fun showAlertDialog() {
+
+        if (willShowDialog) {
+
+            val builder = AlertDialog.Builder(context)
+
+            with(builder) {
+                setTitle(context.getString(R.string.alert_title_permission_denied))
+                setMessage(context.getString(R.string.alert_message_permission_denied))
+                setCancelable(true)
+
+                setPositiveButton(android.R.string.yes) { _, _ ->
+
+                    willShowDialog = !askGPSPermission()
+                }
+                setNegativeButton(context.getString(R.string.alert_button_exit)) { _, _ ->
+
+                    (mView as Activity).finish()
+                }
+                show()
+            }
+        }
     }
 
-    override fun askGPSPermission(): Boolean {
-
-        return if (!hasGpsPermission()) {
-            requestGPSPermission()
-            false
-        } else true
+    override fun getCityData(city: City) {
+        mView.execNav(city)
     }
 
     override fun searchClicked() {
-
         if (hasMarker()) {
             startApiRequest()
         }

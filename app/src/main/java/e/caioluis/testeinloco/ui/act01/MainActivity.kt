@@ -75,9 +75,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
         startActivity(mIntent)
     }
 
-    override fun showProgressBar(state: Boolean) {
+    override fun showProgressBar(show: Boolean) {
 
-        mapfrag_progress_bar.isVisible = state
+        mapfrag_progress_bar.isVisible = show
     }
 
     override fun onRequestPermissionsResult(
