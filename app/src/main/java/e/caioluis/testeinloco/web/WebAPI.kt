@@ -10,7 +10,7 @@ interface WebAPI {
 
     @GET("data/2.5/find?cnt=15&APPID=${Constants.OPEN_WEATHER_KEY}")
 
-    fun syncCallNearbyCitiesByLatLong(
+    fun getNearbyCities(
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double
     ): Call<Cities>

@@ -16,20 +16,15 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import e.caioluis.testeinloco.Constants
 import e.caioluis.testeinloco.R
 import e.caioluis.testeinloco.adapter.CitiesListAdapter
 import e.caioluis.testeinloco.json.Cities
 import e.caioluis.testeinloco.json.City
-import e.caioluis.testeinloco.web.WebAPI
+import e.caioluis.testeinloco.web.ApiService
 import kotlinx.android.synthetic.main.activity_main.*
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.concurrent.TimeUnit
 
 class MainActivityPresenter(
     private val context: Context,
@@ -107,31 +102,11 @@ class MainActivityPresenter(
         )
     }
 
-    private fun retrofitClient(): WebAPI {
-
-        val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .writeTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .build()
-
-        val retroFitAPI = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(
-                GsonConverterFactory.create()
-            ).client(client)
-            .build()
-
-        return retroFitAPI.create(WebAPI::class.java)
-    }
-
     private fun startApiRequest() {
 
         mView.showProgressBar(true)
 
-        val webAPI = retrofitClient()
-
-        webAPI.syncCallNearbyCitiesByLatLong(actualLatLng.latitude, actualLatLng.longitude)
+        (ApiService.service).getNearbyCities(actualLatLng.latitude, actualLatLng.longitude)
             .enqueue(object : Callback<Cities> {
 
                 override fun onFailure(call: Call<Cities>, t: Throwable) {
