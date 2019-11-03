@@ -1,4 +1,4 @@
-package e.caioluis.testeinloco.ui.act01
+package e.caioluis.testeinloco.presenter
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -18,6 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import e.caioluis.testeinloco.R
 import e.caioluis.testeinloco.adapter.CitiesListAdapter
+import e.caioluis.testeinloco.contract.MainActivityContract
 import e.caioluis.testeinloco.json.Cities
 import e.caioluis.testeinloco.json.City
 import e.caioluis.testeinloco.web.ApiService
@@ -27,8 +28,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivityPresenter(
-    private val context: Context,
-    private val mView: MainActivityContract.IView
+    private val view: MainActivityContract.IView
 
 ) : MainActivityContract.IPresenter {
 
@@ -38,8 +38,10 @@ class MainActivityPresenter(
     private var willShowDialog = true
     private var actualLatLng = LatLng(0.0, 0.0)
     private val cityList: ArrayList<City> = ArrayList()
-    private val mainActivity = context as Activity
-    private var fragActivity = context as FragmentActivity
+
+    private val context = view as Context
+    private val mainActivity = view as Activity
+    private var fragActivity = view as FragmentActivity
 
     private val bottomSheet = mainActivity.findViewById<View>(R.id.frag_bottom_sheet)
     private val bSheetBehavior: BottomSheetBehavior<View> = BottomSheetBehavior.from(bottomSheet)
@@ -104,28 +106,28 @@ class MainActivityPresenter(
 
     private fun startApiRequest() {
 
-        mView.showProgressBar(true)
+        view.showProgressBar(true)
 
         (ApiService.service).getNearbyCities(actualLatLng.latitude, actualLatLng.longitude)
             .enqueue(object : Callback<Cities> {
 
                 override fun onFailure(call: Call<Cities>, t: Throwable) {
 
-                    with(mView) {
+                    with(view) {
 
                         showProgressBar(false)
-                        showToastMessage(t.message.toString())
+                        showSnackBarMessage(t.message.toString())
                     }
                 }
 
                 override fun onResponse(call: Call<Cities>, response: Response<Cities>) {
 
-                    with(mView) {
+                    with(view) {
 
                         val cities = response.body()
 
                         if (cities == null) {
-                            showToastMessage(context.getString(R.string.error_message_no_nearby_cities))
+                            showSnackBarMessage(context.getString(R.string.error_message_no_nearby_cities))
                             showProgressBar(false)
                             return
                         }
@@ -142,16 +144,17 @@ class MainActivityPresenter(
 
     private fun setBottomSheetConfigs() {
 
-        bSheetBehavior.bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+        bSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
 
-            override fun onSlide(view: View, slideOffset: Float) {}
+            override fun onSlide(view: View, slideOffset: Float) {
+            }
 
             override fun onStateChanged(view: View, newState: Int) {
 
                 if (newState == BottomSheetBehavior.STATE_DRAGGING)
                     bSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             }
-        }
+        })
     }
 
     private fun setBottomSheetState(show: Boolean) {
@@ -172,7 +175,7 @@ class MainActivityPresenter(
 
     private fun hasMarker(): Boolean {
         return if (actualLatLng == LatLng(0.0, 0.0)) {
-            mView.showToastMessage("Selecione um ponto no mapa!")
+            view.showSnackBarMessage("Selecione um ponto no mapa!")
             false
         } else true
     }
@@ -227,25 +230,26 @@ class MainActivityPresenter(
             val builder = AlertDialog.Builder(context)
 
             with(builder) {
+
                 setTitle(context.getString(R.string.alert_title_permission_denied))
                 setMessage(context.getString(R.string.alert_message_permission_denied))
                 setCancelable(true)
-
                 setPositiveButton(android.R.string.yes) { _, _ ->
-
                     willShowDialog = !askGPSPermission()
                 }
+
                 setNegativeButton(context.getString(R.string.alert_button_exit)) { _, _ ->
 
-                    (mView as Activity).finish()
+                    mainActivity.finish()
                 }
+
                 show()
             }
         }
     }
 
     override fun getCityData(city: City) {
-        mView.execNavigation(city)
+        view.execNavigation(city)
     }
 
     override fun searchClicked() {

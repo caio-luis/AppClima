@@ -1,7 +1,8 @@
-package e.caioluis.testeinloco.ui.act02
+package e.caioluis.testeinloco.presenter
 
 import android.app.Activity
 import e.caioluis.testeinloco.json.City
+import e.caioluis.testeinloco.contract.CityInfoContract
 import kotlinx.android.synthetic.main.activity_city_info.*
 
 class CityInfoPresenter(
@@ -23,6 +24,7 @@ class CityInfoPresenter(
             temperature.temp_min.let { tempMin ->
                 temperature.celsius_min = kelvinToCelsius(tempMin)
             }
+
             weather.first().let {
                 description = it.description
             }

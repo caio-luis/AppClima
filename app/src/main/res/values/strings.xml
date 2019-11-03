@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Teste In Loco</string>
+    <string name="app_name">App Clima</string>
     <string name="bs_title_nearby_cities">Cidades próximas</string>
     <string name="mapf_button_label_search">Buscar</string>
     <string name="ci_title_climate_information">Informações climáticas:</string>

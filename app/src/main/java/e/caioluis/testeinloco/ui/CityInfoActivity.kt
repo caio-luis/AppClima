@@ -1,22 +1,22 @@
-package e.caioluis.testeinloco.ui.act02
+package e.caioluis.testeinloco.ui
 
-import android.content.Context
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import e.caioluis.testeinloco.Constants
 import e.caioluis.testeinloco.R
+import e.caioluis.testeinloco.contract.CityInfoContract
 import e.caioluis.testeinloco.json.City
+import e.caioluis.testeinloco.presenter.CityInfoPresenter
 
-class CityInfoActivity : AppCompatActivity(), CityInfoContract.View {
+class CityInfoActivity : AppCompatActivity(),
+    CityInfoContract.View {
 
-    private lateinit var context: Context
     private lateinit var presenter: CityInfoPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_city_info)
 
-        context = this@CityInfoActivity
         presenter = CityInfoPresenter(this)
 
         receiveIntentData()
@@ -28,5 +28,3 @@ class CityInfoActivity : AppCompatActivity(), CityInfoContract.View {
         presenter.dataReceived(data)
     }
 }
-
-

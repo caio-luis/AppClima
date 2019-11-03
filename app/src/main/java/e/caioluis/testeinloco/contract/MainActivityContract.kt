@@ -1,4 +1,4 @@
-package e.caioluis.testeinloco.ui.act01
+package e.caioluis.testeinloco.contract
 
 import e.caioluis.testeinloco.json.City
 
@@ -6,9 +6,9 @@ interface MainActivityContract {
 
     interface IView {
 
-        fun showToastMessage(message: String)
         fun showProgressBar(show: Boolean)
         fun execNavigation(data: City)
+        fun showSnackBarMessage(text: String)
     }
 
     interface IPresenter {

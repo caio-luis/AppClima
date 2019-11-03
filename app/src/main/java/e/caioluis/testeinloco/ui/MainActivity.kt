@@ -1,19 +1,21 @@
-package e.caioluis.testeinloco.ui.act01
+package e.caioluis.testeinloco.ui
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.google.android.material.snackbar.Snackbar
 import e.caioluis.testeinloco.Constants
 import e.caioluis.testeinloco.R
+import e.caioluis.testeinloco.contract.MainActivityContract
 import e.caioluis.testeinloco.json.City
-import e.caioluis.testeinloco.ui.act02.CityInfoActivity
+import e.caioluis.testeinloco.presenter.MainActivityPresenter
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityContract.IView {
+class MainActivity : AppCompatActivity(), View.OnClickListener,
+    MainActivityContract.IView {
 
     private lateinit var context: Context
     private lateinit var presenter: MainActivityContract.IPresenter
@@ -23,7 +25,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
         setContentView(R.layout.activity_main)
 
         context = this@MainActivity
-        presenter = MainActivityPresenter(context, this)
+        presenter = MainActivityPresenter(this)
 
         presenter.startApp()
 
@@ -39,17 +41,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
         }
     }
 
-    override fun onClick(view: View) = with(presenter) {
+    override fun onClick(view: View) {
+        with(presenter) {
 
-        when (view.id) {
-            R.id.mapfrag_btn_search -> searchClicked()
-            R.id.bs_btn_show_list -> openListClicked()
-            R.id.bs_btn_close -> closeClicked()
+            when (view.id) {
+                R.id.mapfrag_btn_search -> searchClicked()
+                R.id.bs_btn_show_list -> openListClicked()
+                R.id.bs_btn_close -> closeClicked()
+            }
         }
-    }
-
-    override fun showToastMessage(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
     }
 
     override fun execNavigation(data: City) {
@@ -63,6 +63,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, MainActivityCont
 
     override fun showProgressBar(show: Boolean) {
         mapfrag_progress_bar.isVisible = show
+    }
+
+    override fun showSnackBarMessage(text: String) {
+        Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_SHORT).show()
     }
 
     override fun onRequestPermissionsResult(

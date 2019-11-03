@@ -1,4 +1,4 @@
-package e.caioluis.testeinloco.ui.act02
+package e.caioluis.testeinloco.contract
 
 import e.caioluis.testeinloco.json.City
 

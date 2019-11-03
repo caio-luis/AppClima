@@ -42,9 +42,9 @@
                 android:name="com.google.android.gms.ads.APPLICATION_ID"
                 android:value="ca-app-pub-4728958120488060~8539978618" />
 
-        <activity android:name=".ui.act02.CityInfoActivity" />
+        <activity android:name=".ui.CityInfoActivity" />
 
-        <activity android:name=".ui.act01.MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

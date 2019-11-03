@@ -10,13 +10,15 @@ object ApiService {
 
     private fun initRetrofit(): Retrofit {
 
-        val client = OkHttpClient.Builder()
+        val client = OkHttpClient
+            .Builder()
             .connectTimeout(10, TimeUnit.SECONDS)
             .writeTimeout(10, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .build()
 
-        return Retrofit.Builder()
+        return Retrofit
+            .Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(
                 GsonConverterFactory.create()
